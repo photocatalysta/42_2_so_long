@@ -26,7 +26,7 @@ void	check_calloc(char *str, char *buff)
 
 void	throw_error(char *message)
 {
-	perror("Error\n");
+	ft_putstr_fd("Error\n", 2);
 	ft_putstr_fd(message, 2);
 	write(2, "\n", 1);
 }
@@ -45,12 +45,14 @@ int	ft_check_file_extension(char *str)
 		&& str[l_str - 2] == 'e' && str[l_str - 1] == 'r');
 }
 
-int init_nr_objs(t_map *map)
+int	init_nr_objs(t_map *map)
 {
 	int	i;
-	int j;
+	int	j;
+	int	n_players;
 
 	j = -1;
+	n_players = 0;
 	map->n_collecs = 0;
 	map->n_exits = 0;
 	while (map->map_content[++j])
@@ -66,10 +68,11 @@ int init_nr_objs(t_map *map)
 			{
 				map->p1_pos.x = i;
 				map->p1_pos.y = j;
+				n_players += 1;
 			}
 		}
 	}
-	return (map->p1_pos.x > 0 && map->n_collecs > 0 && map->n_exits > 0);
+	return (n_players == 1 && map->n_collecs > 0 && map->n_exits == 1);
 }
 
 char	*get_file_path(char *base_file, int frame, char *suffix)
@@ -89,13 +92,13 @@ char	*get_file_path(char *base_file, int frame, char *suffix)
 	j = -1;
 	while (suffix[++j])
 		str[i + j] = suffix[j];
-	str[i+j+1] = '\0';
+	str[i + j + 1] = '\0';
 	fd = open(str, O_RDONLY);
 	if (fd == -1)
 	{
-		printf("The composed file name is not correctly pointing to an image");
+		ft_putstr_fd("The composed file name is not correctly pointing to an image", 2);
 		free(str);
-		return(NULL);
+		return (NULL);
 	}
 	close(fd);
 	return (str);

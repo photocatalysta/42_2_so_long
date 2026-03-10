@@ -17,7 +17,6 @@ int	handle_mlx(t_data *game)
 	init_keys(game);
 	mlx_hook(game->window, ON_DESTROY, 0, game_exit, game);
 	mlx_loop_hook(game->mlx_conn, ft_render, game);
-//	mlx_expose_hook(game->window, &ft_expose, void);
 	mlx_loop(game->mlx_conn);
 	return (0);
 }
@@ -32,7 +31,7 @@ int	init_game_resources(t_data *game)
 	}
 	if (init_game_gui(game) == 0)
 	{
-		throw_error("Initialisation failure - Game GUI\n");
+		throw_error("Initialisation failure - Game GUI");
 		return (0);
 	}
 	game->map->moves = 0;
@@ -48,15 +47,13 @@ int	main(int argc, char **argv)
 	game = malloc(sizeof(t_data));
 	if (!game)
 		return (EXIT_FAILURE);
-	if(check_map(game, argv[1]) == 0)
+	if (check_map(game, argv[1]) == 0)
 	{
-		throw_error("Initialisation failure - Map\n");
-		return (0);
+		throw_error("Initialisation failure - Map");
+		return (EXIT_FAILURE);
 	}
 	if (!init_game_resources(game))
 		return (EXIT_FAILURE);
-	if (!handle_mlx(game))
-		return (EXIT_FAILURE);
-	game_exit(game);
+	handle_mlx(game);
 	return (EXIT_SUCCESS);
 }

@@ -19,26 +19,15 @@ int	handle_key_input(int keysim, t_data *game)
 	else if (keysim == UP || keysim == RIGHT || keysim == LEFT
 		|| keysim == DOWN || keysim == W || keysim == D
 		|| keysim == A || keysim == S)
-		{
-			if(move(keysim, game->map->p1, game->map) == 0)
-				game_exit(game);
-		}
-/*	else if (keysim == SHOOT)
-		shoot()*/
+	{
+		if (move(keysim, game->map->p1, game->map) == 0)
+			game_exit(game);
+	}
 	return (0);
 }
 
-/*
-int handle_mouse_input(int keysim, t_data *game)
-{
-
-}
-
-// mlx_hook() allows to select the signal_hook better connection for functions
-*/
 int	init_keys(t_data *game)
 {
-	mlx_key_hook(game->window, handle_key_input, game); // Pass info about key hook
-//	mlx_mouse_hook(game->window, &handle_mouse_input, game); // Left, Right, Middle, Scroll Up, Scroll Down
+	mlx_key_hook(game->window, handle_key_input, game);
 	return (1);
 }

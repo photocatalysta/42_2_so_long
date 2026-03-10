@@ -1,50 +1,95 @@
-# So long... and thanks for all the fish
+# So Long... and Thanks for All the Fish
 
-## Table of Content
+A small 2D top-down game built in C using the MiniLibX graphics library, as part of the 42 school curriculum.
 
-- [The rules of the game](#the-rules-of-the-game);
-- [Graphics management](#graphics-management);
-- [Map](#map);
-- The code organization:
-  - [Programme input](#programme-input);
-  - [Init Resources](#init-resources);
-  - [Key Hooks](#key-hooks);
-  - [Movements](#movements);
+## Table of Contents
 
-## The MinLibX library
+- [How to play](#how-to-play)
+- [Getting started](#getting-started)
+- [Map format](#map-format)
+- [Enemies](#enemies)
+- [Code organization](#code-organization)
+  - [Programme input](#programme-input)
+  - [Map validation](#map-validation)
+  - [Init resources](#init-resources)
+  - [Key hooks](#key-hooks)
+  - [Movements](#movements)
 
-This is a graphical engine developed by the school. The project has been developed as homework in Linux. Modified for MacOS for school submission.
+---
 
-## The rules of the game
+## How to Play
 
-- Implement movement functions that are associated to `W A S D` keys to catch the 4 different movement directions;
-- The player cannot move through walls;
-- The number of movement must be displayed in the shell;
-- Must use a 2D view (top-down or profile);
-- Game does not need to be real time (Can be a turned based one).
+You control a character navigating a tile-based 2D world. Your goal is simple:
 
-## Graphics management
+> **Collect every collectible on the map, then reach the exit.**
 
-- The image must be displayed in a window;
-- The management of the window shall be smooth (change to another window, minimize, ...);
-- `ESC` and the window X should close the window and the program in a clean way;
-- The use of the `images` of the MiniLibX is mandatory.
+- Move using `W A S D` or the arrow keys.
+- You **cannot** walk through walls.
+- Every time you move, the current **step count** is printed in the terminal.
+- The step count is also shown **on screen** in the top-left corner.
+- The exit only opens once **all collectibles have been picked up** — stepping on it before that does nothing.
+- If you step on an **enemy patrol** (`D`), you lose immediately.
+- Press `ESC` or close the window to quit at any time.
 
-## Map
+The game does not run in real time — nothing moves unless you press a key.
 
-- The map has to be constructed with 3 components: walls, collectibles, and free space.
-- The map can be composed of only these 5 (6) characters:
+---
 
-  - `0` for an ground space,
-  - `1` for a wall,
-  - `C` for a collectible,
-  - `E` for a map exit,
-  - `P` for the player's starting position.
-  - `D` for the enemies (_bonus_)
+## Getting Started
 
-- The map must contain 1 exit, at least 1 collectible, and 1 starting position to be valid. If the map contains a duplicates characters (exit/start), the program should display an error message.
+### Requirements
 
-Here is a simple valid map:
+- Linux (or macOS with adapted MiniLibX)
+- A C compiler (`gcc`)
+- X11 libraries: `libXext`, `libX11`
+
+### Build
+
+```bash
+make
+```
+
+### Run
+
+```bash
+./so_long maps/your_map.ber
+```
+
+The program takes exactly one argument: a path to a `.ber` map file.
+
+### Clean
+
+```bash
+make clean    # removes object files
+make fclean   # removes object files and the binary
+make re       # full rebuild
+```
+
+---
+
+## Map Format
+
+Maps are plain text files with the `.ber` extension. They must follow these rules:
+
+| Character | Meaning                  |
+|:---------:|--------------------------|
+| `0`       | Empty floor              |
+| `1`       | Wall (impassable)        |
+| `C`       | Collectible (pick up all)|
+| `E`       | Exit (reach after all C) |
+| `P`       | Player starting position |
+| `D`       | Enemy patrol *(bonus)*   |
+
+### Validity rules
+
+- The map must be **rectangular** — all rows the same length.
+- The entire **perimeter must be walls** (`1`) — no open edges.
+- There must be **exactly 1 player** (`P`) and **exactly 1 exit** (`E`).
+- There must be **at least 1 collectible** (`C`).
+- There must be a **valid path** from `P` to `E` passing through all `C` tiles.
+- Any invalid map causes the program to exit cleanly with an error message.
+
+### Example — minimal valid map
 
 ```
 1111111111111
@@ -54,99 +99,88 @@ Here is a simple valid map:
 1111111111111
 ```
 
-- The map must be rectangular.
-- The map must be closed/surrounded by walls. If it is not, the program must return an error.
-- There must be a valid path in the map.
-- The user should be able to parse any kind of map, as long as it respects the above rules.
-- Another example of a minimal `.ber` map:
+### Example — larger map with enemies
 
 ```
 1111111111111111111111111111111111
 1E0000000000000C00000C000000000001
 1010010100100000101001000000010101
 1010010010101010001001000000010101
-1P0000000C00C0000000000000000000C1
+1P0000000C00D0000000000000000000C1
 1111111111111111111111111111111111
 ```
 
-- If any misconfiguration of any kind is encountered in the file, the program must exit in a clean way, and return `"Error\n"` followed by an explicit error message of your choice
+---
 
-<p style="text-align:right;">
-  <a href="#so-long-and-thanks-for-all-the-fish">
-	Go to the top
-  </a>
-</p>
+## Enemies
 
-# The code organization
+Tiles marked `D` represent **enemy patrols**. They are static obstacles:
 
-## Programme input
+- The player **loses immediately** upon stepping onto a `D` tile.
+- During **map validation**, `D` tiles are treated as walls — the flood-fill path checker will not cross them, so a valid path must exist that avoids all enemies.
+- Enemies have a **sprite animation** (like the player), cycling through frames each render tick.
 
-The program must be passed the map to be used for the game. The code sequentially:
+---
 
-- Checks the presence of the additional argument;
-- Checks that the file is properly formatted as `.ber`;
+## Code Organization
 
-`map->map_size` tells how big the matrix of map is. This should be used to manage the content in the window;
+### Programme Input
 
-## Check the map
+The entry point (`main` in [so_long.c](so_long.c)) does the following in order:
 
-- Checks the map to:
-  - Be of rectangular shape
-  - The whole perimeter is closed with a wall;
-  - Go through map and load every location with the specific image required:
-  - There is a valid path:
-    - Use a flooding algorithm, with a block on Exit to ensure the collectibles are not hidden;
-  - Each component has only 1 Player and Exit;
+1. Checks that exactly one argument is provided.
+2. Validates the file extension is `.ber`.
+3. Loads and validates the map.
+4. Initializes the MiniLibX connection and window.
+5. Starts the event loop.
 
-<p style="text-align:right;">
-  <a href="#so-long-and-thanks-for-all-the-fish">
-	Go to the top
-  </a>
-</p>
+### Map Validation
 
-## Init resources
+Handled across [map_loader.c](map_loader.c), [map_checker.c](map_checker.c), [map_checker_utils.c](map_checker_utils.c), and [map_path_check.c](map_path_check.c):
 
-- Initiate the graphic connection to the display and retrieve the screen size;
-- Checks that the map fits in the screen (Map movement is a possible future update)
-- Create a new window:
-  - Initialize objects information and throws an error if the specified file is missing
-- Draw the map:
-  - `0` Loads the Ground space;
-  - `1` Loads the Wall image;
-  - `E C P` loads an ground space as background plus the specific image that represents the Exit, a Collectible, or the Player;
+1. **Load** — reads the file into a string, splits into a `char **` grid.
+2. **Character check** — only `0 1 C E P D \n` are allowed; rows must all be the same length.
+3. **Edge check** — every cell on the perimeter must be `1`.
+4. **Object count** — exactly 1 `P`, exactly 1 `E`, at least 1 `C`.
+5. **Path check** — a recursive flood-fill from `P` verifies that all `C` tiles and `E` are reachable (enemies and walls block the flood).
 
-<p style="text-align:right;">
-  <a href="#so-long-and-thanks-for-all-the-fish">
-	Go to the top
-  </a>
-</p>
+### Init Resources
 
-## Key Hooks
+Handled in [gui_handler.c](gui_handler.c):
 
-|      Key      | Event |         EasierKey         |         Alias function          |                     Prototype                     |
-| :-----------: | :---: | :-----------------------: | :-----------------------------: | :-----------------------------------------------: |
-|   KeyPress    |   2   |       KeyboardPress       |                                 |       int (\*f)(int keycode, void \*param)        |
-|  KeyRelease   |   3   |      KeyboardRelase       |         mlx_key_hook()          |       int (\*f)(int keycode, void \*param)        |
-|  ButtonPress  |   4   |        Mouse Click        |                                 |                         /                         |
-| ButtonRelease |   5   |       Mouse Release       |        mlx_mouse_hook()         | int (\*f)(int button, int x, int y, void \*param) |
-| MotionNotify  |   6   |      Mouse Movement       |                                 |       int (\*f)(int x, int y, void \*param)       |
-|    Expose     |  12   | Redrawing (to be checked) |        mlx_expose_hook()        |                         /                         |
-| DestroyNotify |  17   |       Close Window        |                /                |       int (\*f)(int x, int y, void \*param)       |
-|   LASTEvent   |  36   |             /             | _must be bigger than any event_ |
+- Opens a MiniLibX connection and retrieves screen dimensions.
+- Checks the map fits on screen.
+- Creates the window sized to `map_width × 64` by `map_height × 64` pixels.
+- Loads all sprite images (wall, floor, collectible, exit, player, patrol).
+- Animated objects (`P`, `D`) load a circular linked list of frames that cycle each render tick.
+
+### Key Hooks
+
+| Event | ID | Hook used |
+|---|---|---|
+| Key release | 3 | `mlx_key_hook()` |
+| Close window | 17 | `mlx_hook()` |
+| Render loop | — | `mlx_loop_hook()` |
 
 ### Movements
 
-The settings allow to use two different sets for movement:
+Two control schemes are supported simultaneously:
 
-| Up | Down | Left | Right |
-|:--:|:----:|:----:|:-----:|
-| W  |  S   |   A  |   D   |
-| UP | DOWN | LEFT | RIGHT |
+| Direction | Key 1 | Key 2  |
+|:---------:|:-----:|:------:|
+| Up        | `W`   | `↑`    |
+| Down      | `S`   | `↓`    |
+| Left      | `A`   | `←`    |
+| Right     | `D`   | `→`    |
+| Quit      | `ESC` | *(window × button)* |
 
-`ESC` is assigned to close the game window directly
+Each keypress triggers [moves.c](moves.c), which:
+
+1. Computes the target cell from the current position + direction.
+2. Checks what is on that cell (`0`, `1`, `C`, `E`, `D`).
+3. Acts accordingly — blocks on walls, collects on `C`, loses on `D`, wins on `E` if all collected.
+4. Updates the player position in the map grid and prints the step count.
 
 <p style="text-align:right;">
-  <a href="#so-long-and-thanks-for-all-the-fish">
-	Go to the top
-  </a>
+  <a href="#so-long-and-thanks-for-all-the-fish">Go to the top</a>
 </p>

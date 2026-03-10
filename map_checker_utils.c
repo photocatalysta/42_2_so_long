@@ -1,7 +1,7 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   map_checker.c                                      :+:      :+:    :+:   */
+/*   map_checker_utils.c                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: jsala <jacopo.sala@student.barcelona.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
@@ -11,16 +11,6 @@
 /* ************************************************************************** */
 
 #include "so_long.h"
-
-/*
-@brief:
-Checker functions for map. Receives the map as a string
-returns -1 in case of any error in the map
-
-- Assumes that checks on loaded values (01EPC) have already being done;
-- Assumes that *str is longer than 4 elements
-	-> Checks for ground and less than 2x2 maps done in advance
-*/
 
 int	check_input(char *str)
 {
@@ -34,7 +24,7 @@ int	check_input(char *str)
 	while (str[++i])
 	{
 		if (str[i] != '0' && str[i] != '1' && str[i] != 'E' && str[i] != 'P'
-				&& str[i] != 'C' && str[i] != 'D' && str[i] != '\n')
+			&& str[i] != 'C' && str[i] != 'D' && str[i] != '\n')
 			return (0);
 		if (str[i] == '\n')
 		{
@@ -64,7 +54,7 @@ int	is_edge_walled(char **map, t_pos size)
 		i++;
 	}
 	i = 0;
-	while (i < size.y)	
+	while (i < size.y)
 	{
 		if (map[i][0] != '1' || map[i][size.x - 1] != '1')
 			return (0);

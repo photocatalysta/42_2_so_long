@@ -11,52 +11,29 @@
 /* ************************************************************************** */
 
 #include "so_long.h"
-/*
-int	is_move_inbound(t_pos map_size, int x, int y)
-{
-	return (x > 0 && y > 0
-		&& y < map_size.y && x < map_size.x); // Should not be necessary, but better check ;
-}
 
-int	is_move_wall(char **map, int x, int y)
-{
-	return (map[y][x] == '1');
-}
-*/
 int	player_exit(t_map *map)
 {
 	if (map->n_collecs == 0)
-	{	
-		printf("Win!\n");
+	{
+		ft_putstr_fd("Win!\n", 1);
 		return (0);
 	}
-	else
-		printf("Not all mushrooms were collected\n");
+	ft_putstr_fd("Not all collectibles were gathered\n", 1);
 	return (1);
 }
 
 int	player_collect(t_map *map)
 {
-	printf("1 UP!\n");
+	ft_putstr_fd("1 UP!\n", 1);
 	if (!(map->n_collecs > 0))
-		throw_error("Collectionables should be gone by now\n");
+		throw_error("Collectibles should be gone by now");
 	map->n_collecs -= 1;
 	return (0);
 }
 
 int	player_patrol(void)
 {
-	printf("Game lost\n");
-	return(0);
+	ft_putstr_fd("Game lost\n", 1);
+	return (0);
 }
-/*
-int	is_move_valid(t_map *map, t_pos map_size, t_obj *obj, t_pos new_pos)
-{
-	return (
-		move_inbound(map->map_size, new_pos.x, new_pos.y) == 0
-		|| move_wall(map->map_content, new_pos.x, new_pos.y) == 1
-		|| (map->map_content[new_pos.y][new_pos.x] == 'E' && !(map->n_collecs))
-		//	|| player_patrol(map->map_content, new_pos.x, new_pos.y) == 0
-	);
-}
-*/

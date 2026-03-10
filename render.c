@@ -12,15 +12,11 @@
 
 #include "so_long.h"
 
-int draw_item(t_data *game, t_obj *item, t_pos pos)
-{	
-	/*if (item->obj_char == 'E' || item->obj_char == 'P' 
-		|| item->obj_char == 'C')
-		mlx_put_image_to_window(game->mlx_conn, game->window, 
-			item->anima->img, IMG_W * pos.x, IMG_H * pos.y);*/
+int	draw_item(t_data *game, t_obj *item, t_pos pos)
+{
 	mlx_put_image_to_window(game->mlx_conn, game->window, item->anima->img,
 		IMG_W * pos.x, IMG_H * pos.y);
-	if (item->obj_char == 'P' || item->obj_char == 'D') 
+	if (item->obj_char == 'P' || item->obj_char == 'D')
 	{
 		item->pos.x = pos.x;
 		item->pos.y = pos.y;
@@ -37,7 +33,7 @@ void	draw_game_map(t_data *game, t_map *map)
 	pos.y = -1;
 	while (++pos.y < game->map->map_size.y)
 	{
-		while(++pos.x < game->map->map_size.x)
+		while (++pos.x < game->map->map_size.x)
 		{
 			if (map->map_content[pos.y][pos.x] == 'E')
 				draw_item(game, map->exits, pos);
@@ -76,12 +72,11 @@ int	draw_ui(t_data *game)
 	return (0);
 }
 
-int ft_render(t_data *game)
+int	ft_render(t_data *game)
 {
 	mlx_clear_window(game->mlx_conn, game->window);
 	draw_game_map(game, game->map);
 	draw_ui(game);
-	usleep(75000);
 	mlx_do_sync(game->mlx_conn);
 	return (0);
 }

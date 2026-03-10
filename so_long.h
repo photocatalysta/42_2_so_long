@@ -16,11 +16,8 @@
 # include <unistd.h>
 # include <stdlib.h>
 # include <sys/stat.h>
-# include <unistd.h>
 # include <fcntl.h>
-# include <errno.h>
 # include <mlx.h>
-# include <stdio.h>
 # include "libft/libft.h"
 
 # ifndef BUFFER_SIZE
@@ -28,11 +25,9 @@
 
 # endif
 
-// Signals
+/* Signals */
 # define ON_DESTROY 17
 
-// # define WIN_W 1024
-// # define WIN_H 720
 # define IMG_W 64
 # define IMG_H 64
 # define MAX_MAP_W 15
@@ -83,9 +78,6 @@ typedef struct s_obj
 	t_anima			*anima;
 	char			obj_char;
 	unsigned int	obj_id;
-	//unsigned int	life;
-	//unsigned int	attack;
-	//unsigned int	defense;
 }	t_obj;
 
 typedef struct s_map
@@ -112,14 +104,14 @@ typedef struct s_data
 	int		end;
 }	t_data;
 
-// Utils
+/* Utils */
 void	print_map(char **map);
 void	throw_error(char *message);
 int		ft_check_file_extension(char *str);
 char	*get_file_path(char *base_file, int frame, char *suffix);
 
-// Game functions
-// Initialisation
+/* Game functions */
+/* Initialisation */
 
 int		init_objects(void *mlx_conn, t_map *map);
 int		init_nr_objs(t_map *map);
@@ -127,17 +119,17 @@ t_anima	*load_img(void *mlx, char *img_file, int frame);
 t_obj	*load_obj(void *mlx, char *img_file, char obj_char);
 int		init_game_gui(t_data *game);
 
-// Input Handler
+/* Input Handler */
 int		init_keys(t_data *game);
 int		handle_key_input(int keysim, t_data *game);
 
-// Map loader
+/* Map loader */
 
 t_pos	get_map_size(char **map);
 char	**read_mapfile(int fd);
 int		load_map(char *file, t_map *map);
 
-// Map checker
+/* Map checker */
 
 int		check_map_fit(t_map *map, void *mlx_conn);
 int		check_map_size(t_map *map, void *mlx_conn);
@@ -145,36 +137,33 @@ int		check_map(t_data *game, char *map_file);
 int		check_input(char *str);
 int		is_edge_walled(char **map, t_pos size);
 
-// Map path checker
+/* Map path checker */
 
-int 	check_valid_path(t_map *map);
-char 	**copy_map(t_pos size, char **map);
+int		check_valid_path(t_map *map);
+char	**copy_map(t_pos size, char **map);
 
-// Moves
+/* Moves */
 
 t_obj	*update_obj_pos(t_map *map, t_obj *obj, t_pos new_pos);
 int		move_action(t_map *map, t_obj *obj, t_pos new_pos);
 int		move(int keysim, t_obj *obj, t_map *map);
 
-// Rendering
+/* Rendering */
 
 int		ft_render(t_data *game);
 void	draw_game_map(t_data *game, t_map *map);
 
-// Drawings
+/* Drawings */
 
 int		draw_item(t_data *game, t_obj *item, t_pos pos);
 
-// Moves_utils
+/* Moves_utils */
 
-//int		is_move_valid(t_map *map, t_pos map_size, t_obj *obj, t_pos new_pos);
-//int		is_move_inbound(t_pos map_size, int x, int y);
-//int		is_move_wall(char **map, int x, int y);
 int		player_exit(t_map *map);
 int		player_collect(t_map *map);
 int		player_patrol(void);
 
-// Free allocations
+/* Free allocations */
 
 int		game_exit(t_data *game);
 void	free_matrix(char **matrix);
@@ -182,9 +171,7 @@ void	free_anima_list(void *mlx, t_anima **anima);
 void	free_object(void *mlx, t_obj *obj);
 void	free_resources(t_data *game);
 
-// Other functions
+/* Other functions */
 void	check_calloc(char *str, char *buff);
-
-// void	attack(int keysim, t_obj obj, t_map *map);
 
 #endif

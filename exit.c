@@ -15,6 +15,9 @@
 int	game_exit(t_data *game)
 {
 	free_resources(game);
+	if (game->window)
+		mlx_destroy_window(game->mlx_conn, game->window);
+	mlx_destroy_display(game->mlx_conn);
 	free(game->mlx_conn);
 	free(game);
 	exit(EXIT_SUCCESS);
@@ -32,16 +35,24 @@ void	free_matrix(char **matrix)
 
 void	free_anima_list(void *mlx, t_anima **anima)
 {
+	t_anima	*start;
 	t_anima	*temp;
 
-	temp = NULL;
-	while ((*anima) != NULL && (*anima)->img != NULL)
+	if (!anima || !(*anima))
+		return ;
+	start = *anima;
+	temp = start;
+	while (temp->next != NULL && temp->next != start)
+		temp = temp->next;
+	if (temp->next == start)
+		temp->next = NULL;
+	while (*anima)
 	{
 		temp = (*anima)->next;
-		if ((*anima)->img != NULL)
+		if ((*anima)->img)
 			mlx_destroy_image(mlx, (*anima)->img);
-		(*anima)->img = NULL;
-		(*anima) = temp;
+		free(*anima);
+		*anima = temp;
 	}
 }
 
@@ -53,11 +64,14 @@ void	free_object(void *mlx, t_obj *obj)
 
 void	free_resources(t_data *game)
 {
-	free_matrix(game->map->map_content);
+	if (!game->map)
+		return ;
+	if (game->map->map_content)
+		free_matrix(game->map->map_content);
 	if (game->map->p1 != NULL)
 		free_object(game->mlx_conn, game->map->p1);
-	if (game->map->collecs != NULL){
-		free_object(game->mlx_conn, game->map->collecs);}
+	if (game->map->collecs != NULL)
+		free_object(game->mlx_conn, game->map->collecs);
 	if (game->map->exits != NULL)
 		free_object(game->mlx_conn, game->map->exits);
 	if (game->map->ground != NULL)
@@ -66,6 +80,6 @@ void	free_resources(t_data *game)
 		free_object(game->mlx_conn, game->map->wall);
 	if (game->map->patrols != NULL)
 		free_object(game->mlx_conn, game->map->patrols);
-	if (game->map != NULL)
-		free(game->map);
+	free(game->map);
+	game->map = NULL;
 }

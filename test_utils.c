@@ -1,7 +1,7 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   utils.c                                            :+:      :+:    :+:   */
+/*   test_utils.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: jsala <jacopo.sala@student.barcelona.co    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
@@ -18,5 +18,9 @@ void	print_map(char **map)
 
 	i = 0;
 	while (map[i])
-		printf("%s\n", map[i++]);
+	{
+		ft_putstr_fd(map[i], 1);
+		ft_putstr_fd("\n", 1);
+		i++;
+	}
 }

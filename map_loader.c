@@ -10,8 +10,6 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-/* Collection of function to load and generate maps */
-
 #include "so_long.h"
 
 t_pos	get_map_size(char **map)
@@ -31,6 +29,7 @@ char	**read_mapfile(int fd)
 {
 	char	*buff;
 	char	*str;
+	char	*old_str;
 	char	**map;
 
 	buff = ft_calloc(sizeof(char), (BUFFER_SIZE + 1));
@@ -41,12 +40,18 @@ char	**read_mapfile(int fd)
 	str[0] = '\0';
 	buff[BUFFER_SIZE] = '\0';
 	while (read(fd, buff, BUFFER_SIZE))
-		str = ft_strjoin(str, buff);
+	{
+		old_str = str;
+		str = ft_strjoin(old_str, buff);
+		free(old_str);
+		if (!str)
+			exit(EXIT_FAILURE);
+	}
 	free(buff);
 	if (ft_strlen(str) < 5 || !check_input(str))
 	{
 		free(str);
-		write(2, "The input map is not valid", 26);
+		write(2, "Error\nThe input map is not valid\n", 32);
 		return (NULL);
 	}
 	map = ft_split(str, '\n');

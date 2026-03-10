@@ -14,20 +14,24 @@
 
 t_obj	*update_obj_pos(t_map *map, t_obj *obj, t_pos new_pos)
 {
+	char	*moves_str;
+
 	map->map_content[new_pos.y][new_pos.x] = obj->obj_char;
 	map->map_content[obj->pos.y][obj->pos.x] = '0';
 	obj->pos.x = new_pos.x;
 	obj->pos.y = new_pos.y;
 	map->moves += 1;
+	moves_str = ft_itoa(map->moves);
 	ft_putstr_fd("Current number of moves: ", 1);
-	ft_putstr_fd(ft_itoa(map->moves), 1);
+	ft_putstr_fd(moves_str, 1);
 	ft_putstr_fd(";\n", 1);
+	free(moves_str);
 	return (obj);
 }
 
 int	move_action(t_map *map, t_obj *obj, t_pos new_pos)
 {
-	char obj_c;
+	char	obj_c;
 
 	obj_c = map->map_content[new_pos.y][new_pos.x];
 	if (obj_c == '1')
@@ -58,4 +62,3 @@ int	move(int keysim, t_obj *obj, t_map *map)
 		new_pos.x += 1;
 	return (move_action(map, obj, new_pos));
 }
-// void	attack(int keysim, t_obj obj, t_map *map)
