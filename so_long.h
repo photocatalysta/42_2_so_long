@@ -17,7 +17,7 @@
 # include <stdlib.h>
 # include <sys/stat.h>
 # include <fcntl.h>
-# include <mlx.h>
+# include "mlx.h"
 # include "libft/libft.h"
 
 # ifndef BUFFER_SIZE
@@ -166,7 +166,7 @@ int		player_patrol(void);
 /* Free allocations */
 
 int		game_exit(t_data *game);
-void	free_matrix(char **matrix);
+void	ft_free_matrix(char **matrix);
 void	free_anima_list(void *mlx, t_anima **anima);
 void	free_object(void *mlx, t_obj *obj);
 void	free_resources(t_data *game);

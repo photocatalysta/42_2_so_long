@@ -23,7 +23,7 @@ int	game_exit(t_data *game)
 	exit(EXIT_SUCCESS);
 }
 
-void	free_matrix(char **matrix)
+void	ft_free_matrix(char **matrix)
 {
 	int	i;
 
@@ -67,7 +67,7 @@ void	free_resources(t_data *game)
 	if (!game->map)
 		return ;
 	if (game->map->map_content)
-		free_matrix(game->map->map_content);
+		ft_free_matrix(game->map->map_content);
 	if (game->map->p1 != NULL)
 		free_object(game->mlx_conn, game->map->p1);
 	if (game->map->collecs != NULL)

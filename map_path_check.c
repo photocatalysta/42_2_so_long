@@ -29,7 +29,7 @@ char	**copy_map(t_pos size, char **map)
 		temp_map[i] = ft_calloc(sizeof(char), (size.x + 1));
 		if (!temp_map[i])
 		{
-			free_matrix(temp_map);
+			ft_free_matrix(temp_map);
 			return (NULL);
 		}
 		temp_map[i][size.x] = '\0';
@@ -73,9 +73,9 @@ int	check_valid_path(t_map *map)
 			map->n_collecs))
 	{
 		throw_error("No valid path exists in the map");
-		free_matrix(temp_map);
+		ft_free_matrix(temp_map);
 		return (0);
 	}
-	free_matrix(temp_map);
+	ft_free_matrix(temp_map);
 	return (1);
 }
